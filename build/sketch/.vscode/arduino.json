@@ -1,0 +1,7 @@
+#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\.vscode\\arduino.json"
+{
+    "sketch": "Basic.ino",
+    "port": "COM8",
+    "board": "arduino:avr:uno",
+    "output": "build"
+}
