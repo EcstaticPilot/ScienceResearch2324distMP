@@ -13,7 +13,7 @@ const float radius = 1.26;
 #include <AFMotor.h>
 
 double Kp = 2.5, Ki = 20, Kd = 0.25;
-
+//double Kp = 2, Ki = 20, Kd = 0;
 class wheel
 {
 public:
@@ -141,13 +141,13 @@ double RPMtoIPS(double rpm);
 double IPStoRPM(double ips);
 #line 144 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void setup();
-#line 186 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 187 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void loop();
-#line 234 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 233 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void EncoderInit();
-#line 243 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 242 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedR();
-#line 248 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 247 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedL();
 #line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm)
@@ -195,43 +195,42 @@ float a1 = 50;
 float a2 = 30;
 float j1 = 500;
 float j2 = 100;
-float v0 = 6;
+float v0 = 1;
 float vf = 10;
 float vmax = 22;
   //SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
   SCurveProfile profile = SCurveProfile(target, a1,a2,j1,j2,v0,vf,vmax);
+  //SCurveProfile profile2(10, 50,15,500,100,2,4,7);
 void loop()
 {
   
-  float output = profile.getOutputDist(wheelR.distTravelled());
+  float output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
   if (output != 0)
   {
-
-    output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
-
     wheelL.setTargetSpeed(IPStoRPM(output));
     wheelR.setTargetSpeed(IPStoRPM(output));
     wheelL.runPID();
     wheelR.runPID();
+    
+
    // Serial.print("dist:");
     Serial.print((wheelR.distTravelled()+wheelL.distTravelled())/2);
     Serial.print(", ");
     Serial.print(output);
     Serial.print(", ");
-    // Serial.print(time);
-      Serial.print(", ");
-    Serial.print(IPStoRPM(output));
+    Serial.print(millis()/1000.0);
     Serial.print(", ");
-    Serial.print(wheelL.speed);
+    Serial.print(RPMtoIPS(wheelL.speed));
     Serial.print(", ");
-    Serial.print(wheelR.speed);
-    Serial.print(", ");
-    Serial.println(((wheelR.speed+wheelL.speed)/2) - IPStoRPM(output));
-
+    Serial.println(RPMtoIPS(wheelR.speed));
+    //Serial.print(", ");
+    //Serial.println(((wheelR.speed+wheelL.speed)/2) - IPStoRPM(output));
+    
     wheelL.updateRotations();
     wheelR.updateRotations();
     delay(100);
   }
+
   else{
   Serial.println("Done");
   Serial.print("rotations:");

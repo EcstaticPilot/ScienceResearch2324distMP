@@ -168,6 +168,16 @@ SCurveProfile::SCurveProfile(float target, float a1, float a2, float j1, float j
     timeMarks[3] = timeMarks[2] + timeMarks[1];
     distStart = p3(timeMarks[3]);
     timeMarks[4] = timeMarks[3] + (target - distStart - distEnd) / vmax;
+
+    while(timeMarks[4]<timeMarks[3]){
+        //short dist I need to adjust vmax
+        vmax--;
+        timeMarks[2] = (vmax - v0) / a1;
+        timeMarks[3] = timeMarks[2] + timeMarks[1];
+        distStart = p3(timeMarks[3]);
+        timeMarks[4] = timeMarks[3] + (target - distStart - distEnd) / vmax;
+    }
+
     timeMarks[5] = timeMarks[4] + a2 / j2;
     timeMarks[6] = timeMarks[4] + (vmax - vf) / a2;
     timeMarks[7] = timeMarks[6] + a2 / j2;
