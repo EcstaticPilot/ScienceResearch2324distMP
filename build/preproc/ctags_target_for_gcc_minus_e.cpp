@@ -11,7 +11,8 @@ const byte encoderLpinB = 18; // B pin -> the digital pin 18
 const float radius = 1.26;
 # 12 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino" 2
 
-double Kp = 2.5, Ki = 20, Kd = 0.25;
+double Kp = .5, Ki = 10, Kd = 0.25;
+double kf = 255.0/190.0;
 //double Kp = 2, Ki = 20, Kd = 0;
 class wheel
 {
@@ -63,9 +64,25 @@ public:
   void runPID()
   {
     bool e = speedController.Compute();
+    e = true;
     if (e)
     {
-      run((reverse ? -1 : 1) * output);
+      run((reverse ? -1 : 1) * (output + targetSpeed * kf));
+      Serial.print("output: ");
+      Serial.println(output + targetSpeed * kf);
+    }
+  };
+
+  void runPID(float targetSpeed)
+  {
+    setTargetSpeed(targetSpeed);
+    bool e = speedController.Compute();
+    e = true;
+    if (e)
+    {
+      run((reverse ? -1 : 1) * (output + targetSpeed * kf));
+      Serial.print("output: ");
+      Serial.println(output + targetSpeed * kf);
     }
   };
 
@@ -191,18 +208,17 @@ void loop()
   float output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
   if (output != 0)
   {
-    wheelL.setTargetSpeed(IPStoRPM(output));
-    wheelR.setTargetSpeed(IPStoRPM(output));
-    wheelL.runPID();
-    wheelR.runPID();
+    wheelL.runPID(IPStoRPM(output));
+    wheelR.runPID(IPStoRPM(output));
 
 
    // Serial.print("dist:");
     Serial.print((wheelR.distTravelled()+wheelL.distTravelled())/2);
+        Serial.print(", ");
+    Serial.print(millis()/1000.0);
     Serial.print(", ");
     Serial.print(output);
-    Serial.print(", ");
-    Serial.print(millis()/1000.0);
+
     Serial.print(", ");
     Serial.print(RPMtoIPS(wheelL.speed));
     Serial.print(", ");

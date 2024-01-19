@@ -12,7 +12,8 @@ const byte encoderLpinB = 18; // B pin -> the digital pin 18
 const float radius = 1.26;
 #include <AFMotor.h>
 
-double Kp = 2.5, Ki = 20, Kd = 0.25;
+double Kp = .5, Ki = 10, Kd = 0.25;
+double kf = 255.0/190.0;
 //double Kp = 2, Ki = 20, Kd = 0;
 class wheel
 {
@@ -64,9 +65,25 @@ public:
   void runPID()
   {
     bool e = speedController.Compute();
+    e = true;
     if (e)
     {
-      run((reverse ? -1 : 1) * output);
+      run((reverse ? -1 : 1) *  (output + targetSpeed * kf));
+      Serial.print("output: ");
+      Serial.println(output + targetSpeed * kf);
+    }
+  };
+
+  void runPID(float targetSpeed)
+  {
+    setTargetSpeed(targetSpeed);
+    bool e = speedController.Compute();
+    e = true;
+    if (e)
+    {
+      run((reverse ? -1 : 1) *  (output + targetSpeed * kf));
+      Serial.print("output: ");
+      Serial.println(output + targetSpeed * kf);
     }
   };
 
@@ -135,21 +152,21 @@ public:
 wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1,radius, true);
 wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4,radius);
 
-#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 153 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm);
-#line 140 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 157 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double IPStoRPM(double ips);
-#line 144 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 161 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void setup();
-#line 187 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 204 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void loop();
-#line 233 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 249 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void EncoderInit();
-#line 242 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 258 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedR();
-#line 247 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 263 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedL();
-#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 153 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm)
 {
   return rpm * 2 * 3.1415926535897932384626433832795 * radius / 60;
@@ -207,18 +224,17 @@ void loop()
   float output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
   if (output != 0)
   {
-    wheelL.setTargetSpeed(IPStoRPM(output));
-    wheelR.setTargetSpeed(IPStoRPM(output));
-    wheelL.runPID();
-    wheelR.runPID();
+    wheelL.runPID(IPStoRPM(output));
+    wheelR.runPID(IPStoRPM(output));
     
 
    // Serial.print("dist:");
     Serial.print((wheelR.distTravelled()+wheelL.distTravelled())/2);
+        Serial.print(", ");
+    Serial.print(millis()/1000.0);
     Serial.print(", ");
     Serial.print(output);
-    Serial.print(", ");
-    Serial.print(millis()/1000.0);
+
     Serial.print(", ");
     Serial.print(RPMtoIPS(wheelL.speed));
     Serial.print(", ");
