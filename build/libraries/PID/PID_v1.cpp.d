@@ -1,4 +1,4 @@
-C:\Users\nikhi\Documents\Arduino\generated_examples\Basic\build\libraries\PID\PID_v1.cpp.o: \
+C:\Users\nikhi\Documents\Arduino\ScienceResearch2324\build\libraries\PID\PID_v1.cpp.o: \
  C:\Users\nikhi\Documents\Arduino\libraries\PID\PID_v1.cpp \
  C:\Users\nikhi\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino/Arduino.h \
  C:\Users\nikhi\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino/binary.h \

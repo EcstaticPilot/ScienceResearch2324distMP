@@ -1,4 +1,4 @@
-C:\Users\nikhi\Documents\Arduino\generated_examples\Basic\build\libraries\Adafruit_Motor_Shield_library\AFMotor.cpp.o: \
+C:\Users\nikhi\Documents\Arduino\ScienceResearch2324\build\libraries\Adafruit_Motor_Shield_library\AFMotor.cpp.o: \
  C:\Users\nikhi\Documents\Arduino\libraries\Adafruit_Motor_Shield_library\AFMotor.cpp \
  C:\Users\nikhi\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino/Arduino.h \
  C:\Users\nikhi\AppData\Local\Arduino15\packages\arduino\hardware\avr\1.8.6\cores\arduino/binary.h \

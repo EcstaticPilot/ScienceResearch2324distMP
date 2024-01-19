@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 #include <PID_v1.h>
 #include "MotionProfile.h"
 
@@ -135,21 +135,21 @@ public:
 wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1,radius, true);
 wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4,radius);
 
-#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm);
-#line 140 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 140 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double IPStoRPM(double ips);
-#line 144 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 144 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void setup();
-#line 186 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 186 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void loop();
-#line 234 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 234 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void EncoderInit();
-#line 243 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 243 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedR();
-#line 248 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 248 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedL();
-#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
+#line 136 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm)
 {
   return rpm * 2 * 3.1415926535897932384626433832795 * radius / 60;
@@ -206,9 +206,9 @@ void loop()
   float output = profile.getOutputDist(wheelR.distTravelled());
   if (output != 0)
   {
-    long currTime = micros();
+
     output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
-    long time = micros() - currTime;
+
     wheelL.setTargetSpeed(IPStoRPM(output));
     wheelR.setTargetSpeed(IPStoRPM(output));
     wheelL.runPID();
@@ -218,7 +218,7 @@ void loop()
     Serial.print(", ");
     Serial.print(output);
     Serial.print(", ");
-     Serial.print(time);
+    // Serial.print(time);
       Serial.print(", ");
     Serial.print(IPStoRPM(output));
     Serial.print(", ");

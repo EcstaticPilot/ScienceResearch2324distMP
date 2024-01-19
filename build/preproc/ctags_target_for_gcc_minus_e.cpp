@@ -1,6 +1,6 @@
-# 1 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino"
-# 2 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino" 2
-# 3 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino" 2
+# 1 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+# 2 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino" 2
+# 3 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino" 2
 
 // The sample code for driving one way motor encoder
 const byte encoderRpinA = 2; // A pin -> the interrupt pin 0
@@ -9,7 +9,7 @@ const byte encoderLpinA = 3; // A pin -> the interrupt pin 1
 const byte encoderLpinB = 18; // B pin -> the digital pin 18
 
 const float radius = 1.26;
-# 12 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\Basic.ino" 2
+# 12 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino" 2
 
 double Kp = 2.5, Ki = 20, Kd = 0.25;
 
@@ -190,9 +190,9 @@ void loop()
   float output = profile.getOutputDist(wheelR.distTravelled());
   if (output != 0)
   {
-    long currTime = micros();
+
     output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
-    long time = micros() - currTime;
+
     wheelL.setTargetSpeed(IPStoRPM(output));
     wheelR.setTargetSpeed(IPStoRPM(output));
     wheelL.runPID();
@@ -202,7 +202,7 @@ void loop()
     Serial.print(", ");
     Serial.print(output);
     Serial.print(", ");
-     Serial.print(time);
+    // Serial.print(time);
       Serial.print(", ");
     Serial.print(IPStoRPM(output));
     Serial.print(", ");

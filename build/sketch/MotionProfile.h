@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\MotionProfile.h"
+#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\MotionProfile.h"
 
 class SCurveProfile
 {

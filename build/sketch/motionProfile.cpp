@@ -1,4 +1,4 @@
-#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\generated_examples\\Basic\\motionProfile.cpp"
+#line 1 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\motionProfile.cpp"
 #include "MotionProfile.h"
 #include "math.h"
 

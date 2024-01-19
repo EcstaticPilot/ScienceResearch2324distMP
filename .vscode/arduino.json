@@ -1,5 +1,5 @@
 {
-    "sketch": "Basic.ino",
+    "sketch": "ScienceResearch2324.ino",
     "port": "COM8",
     "board": "arduino:avr:uno",
     "output": "build"

@@ -189,9 +189,9 @@ void loop()
   float output = profile.getOutputDist(wheelR.distTravelled());
   if (output != 0)
   {
-    long currTime = micros();
+
     output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
-    long time = micros() - currTime;
+
     wheelL.setTargetSpeed(IPStoRPM(output));
     wheelR.setTargetSpeed(IPStoRPM(output));
     wheelL.runPID();
@@ -201,7 +201,7 @@ void loop()
     Serial.print(", ");
     Serial.print(output);
     Serial.print(", ");
-     Serial.print(time);
+    // Serial.print(time);
       Serial.print(", ");
     Serial.print(IPStoRPM(output));
     Serial.print(", ");
