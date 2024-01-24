@@ -12,14 +12,16 @@ const byte encoderLpinB = 18; // B pin -> the digital pin 18
 const float radius = 1.26;
 #include <AFMotor.h>
 
-double Kp = .5, Ki = 10, Kd = 0.25;
-double kf = 255.0/190.0;
-//double Kp = 2, Ki = 20, Kd = 0;
+//double Kp = 4, Ki = 50, Kd = 0;
+double Kp = 5, Ki = 30, Kd = 0;
+double kf = 0;
+// double Kp = 2, Ki = 20, Kd = 0;
 class wheel
 {
 public:
-  double speed = 0;
-  int ticks = 0;
+  int count = 0;
+  double rpm = 0;
+  uint64_t ticks = 0;
   float radius;
   double rotations = 0;
   double output;
@@ -30,9 +32,10 @@ public:
   byte encoderPinALast;
   boolean Direction = true;
   AF_DCMotor motor = AF_DCMotor(1);
-  PID speedController = PID(&speed, &output, &targetSpeed, Kp, Ki, Kd, DIRECT);
-  wheel(byte encoderPinA, byte encoderPinB, int motorNumber, float radius, boolean reverse = false): radius(radius), reverse(reverse),encoderPinA(encoderPinA), encoderPinB(encoderPinB)
+  PID speedController = PID(&rpm, &output, &targetSpeed, Kp, Ki, Kd, DIRECT);
+  wheel(byte encoderPinA, byte encoderPinB, int motorNumber, float radius, boolean reverse = false) : radius(radius), reverse(reverse), encoderPinA(encoderPinA), encoderPinB(encoderPinB)
   {
+    speedController.SetSampleTime(100);
     this->motor = AF_DCMotor(motorNumber);
     speedController.SetMode(AUTOMATIC);
     speedController.SetSampleTime(100);
@@ -68,9 +71,9 @@ public:
     e = true;
     if (e)
     {
-      run((reverse ? -1 : 1) *  (output + targetSpeed * kf));
-      Serial.print("output: ");
-      Serial.println(output + targetSpeed * kf);
+      run((reverse ? -1 : 1) * (output + targetSpeed * kf));
+      // Serial.print("output: ");
+      // Serial.println(output + targetSpeed * kf);
     }
   };
 
@@ -81,9 +84,9 @@ public:
     e = true;
     if (e)
     {
-      run((reverse ? -1 : 1) *  (output + targetSpeed * kf));
-      Serial.print("output: ");
-      Serial.println(output + targetSpeed * kf);
+      run((reverse ? -1 : 1) * (output + targetSpeed * kf));
+      // Serial.print("output: ");
+      // Serial.println(output + targetSpeed * kf);
     }
   };
 
@@ -108,12 +111,12 @@ public:
     {
       if (!reverse)
       {
-        speed++;
+        count++;
         ticks++;
       }
       else
       {
-        speed--;
+        count--;
         ticks--;
       }
     }
@@ -121,21 +124,27 @@ public:
     {
       if (!reverse)
       {
-        speed--;
+        count--;
         ticks--;
       }
       else
       {
-        speed++;
+        count++;
         ticks++;
       }
     }
   };
 
- void updateRotations()
+  double getSpeed(){
+    rpm = (count/1920.0)/0.1 * 60 ;
+    return rpm;
+  }
+
+  void updateRotations()
   {
+    getSpeed();
     rotations = (double)ticks / 1920.0;
-    speed = 0;
+    count = 0;
   };
 
   double distTravelled()
@@ -145,28 +154,27 @@ public:
   };
 };
 
-
-/* 
+/*
 
   */
-wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1,radius, true);
-wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4,radius);
+wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1, radius, true);
+wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4, radius);
 
-#line 153 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
-double RPMtoIPS(double rpm);
-#line 157 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
-double IPStoRPM(double ips);
 #line 161 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+double RPMtoIPS(double rpm);
+#line 165 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+double IPStoRPM(double ips);
+#line 169 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void setup();
-#line 204 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 211 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void loop();
-#line 249 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 271 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void EncoderInit();
-#line 258 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 280 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedR();
-#line 263 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 285 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 void wheelSpeedL();
-#line 153 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
+#line 161 "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\ScienceResearch2324.ino"
 double RPMtoIPS(double rpm)
 {
   return rpm * 2 * 3.1415926535897932384626433832795 * radius / 60;
@@ -182,51 +190,51 @@ void setup()
   EncoderInit(); // Initialize the module
   float target = 4.3;
   SCurveProfile profile = SCurveProfile(target, 1.0, 1.2, 3.42, 3.6, 0.2, 0.5, 1.17);
-  delay(0);/*
-  for (float i = 0; i <= profile.target + 0.01; i += 0.01)
-  {
-    auto start = millis();
+  delay(0); /*
+   for (float i = 0; i <= profile.target + 0.01; i += 0.01)
+   {
+     auto start = millis();
 
-    float output = profile.getOutputDist(i);
+     float output = profile.getOutputDist(i);
 
-    auto end = millis();
+     auto end = millis();
 
-    unsigned long diff = end - start;
+     unsigned long diff = end - start;
 
-    //std::cout << "Time taken " << diff.count() << " s\n";
-    Serial.print(i);
-    Serial.print(",");
-    Serial.print(output);
-    Serial.print(",");
-    Serial.println(diff);
-  }
-  //delay(500);
-  /*
-  wheelL.setTargetSpeed(20);
-  wheelR.setTargetSpeed(20);
-  */
-  
+     //std::cout << "Time taken " << diff.count() << " s\n";
+     Serial.print(i);
+     Serial.print(",");
+     Serial.print(output);
+     Serial.print(",");
+     Serial.println(diff);
+   }
+   //delay(500);
+   /*
+   wheelL.setTargetSpeed(20);
+   wheelR.setTargetSpeed(20);
+   */
 }
-float target = 20;
-float a1 = 50;
-float a2 = 30;
-float j1 = 500;
-float j2 = 100;
+float target = 15;
+float a1 = 5;
+float a2 = 3;
+float j1 = 50;
+float j2 = 10;
 float v0 = 1;
-float vf = 10;
-float vmax = 22;
-  //SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
-  SCurveProfile profile = SCurveProfile(target, a1,a2,j1,j2,v0,vf,vmax);
-  //SCurveProfile profile2(10, 50,15,500,100,2,4,7);
+float vf = 1;
+float vmax = 6;
+// SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
+SCurveProfile profile = SCurveProfile(target, a1, a2, j1, j2, v0, vf, vmax);
+// SCurveProfile profile2(10, 50,15,500,100,2,4,7);
 void loop()
 {
+  
   
   float output = profile.getOutputDist((wheelR.distTravelled()+wheelL.distTravelled())/2);
   if (output != 0)
   {
     wheelL.runPID(IPStoRPM(output));
     wheelR.runPID(IPStoRPM(output));
-    
+
 
    // Serial.print("dist:");
     Serial.print((wheelR.distTravelled()+wheelL.distTravelled())/2);
@@ -234,14 +242,15 @@ void loop()
     Serial.print(millis()/1000.0);
     Serial.print(", ");
     Serial.print(output);
-
     Serial.print(", ");
-    Serial.print(RPMtoIPS(wheelL.speed));
+    Serial.print(profile.getOutputTime(millis()/1000.0));
     Serial.print(", ");
-    Serial.println(RPMtoIPS(wheelR.speed));
+    Serial.print(RPMtoIPS(wheelL.rpm));
+    Serial.print(", ");
+    Serial.println(RPMtoIPS(wheelR.rpm));
     //Serial.print(", ");
     //Serial.println(((wheelR.speed+wheelL.speed)/2) - IPStoRPM(output));
-    
+
     wheelL.updateRotations();
     wheelR.updateRotations();
     delay(100);
@@ -260,6 +269,19 @@ void loop()
   Serial.print(wheelR.speed);
   Serial.print(" Right: ");
   Serial.println(wheelR.speed);
+  *//*
+  wheelR.run(255);
+  Serial.print(millis() / 1000.0);
+  Serial.print(", ");
+  Serial.print(wheelR.getSpeed());
+  Serial.print(", ");
+  Serial.print(wheelR.rotations);
+  Serial.print(", ");
+  Serial.println(wheelR.rpm);
+  wheelL.updateRotations();
+  wheelR.updateRotations();
+  
+  delay(100);
   */
 }
 
