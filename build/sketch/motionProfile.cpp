@@ -3,7 +3,7 @@
 #include "math.h"
 
 using namespace std;
-#define max(a,b) ((a)>(b)?(a):(b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
 
 float SCurveProfile::v1(float t)
 {
@@ -100,20 +100,23 @@ float SCurveProfile::tp3(float d)
     float expression = pow(temp, 2.0 / 3.0) - (2 * j1 * v2(timeMarks[2]));
     float denominator = j1 * (pow(temp, 1.0 / 3.0));
 
-    return expression/denominator + timeMarks[2];
+    return expression / denominator + timeMarks[2];
 }
 
 float SCurveProfile::tp4(float d)
 {
-    float output = 1/vmax * d - distStart/vmax + timeMarks[3];
+    float output = 1 / vmax * d - distStart / vmax + timeMarks[3];
     return output;
 }
 float SCurveProfile::tp5(float d)
-{   lastTime = max(lastTime,timeMarks[4]);
+{
+    lastTime = max(lastTime, timeMarks[4]);
     float output = lastTime;
-    while(true){
-        output = output - (p5(output)-d)/v5(output);
-        if(fabs(p5(output)-d)<0.001){
+    while (true)
+    {
+        output = output - (p5(output) - d) / v5(output);
+        if (fabs(p5(output) - d) < 0.001)
+        {
             break;
         }
     }
@@ -122,11 +125,13 @@ float SCurveProfile::tp5(float d)
 }
 float SCurveProfile::tp6(float d)
 {
-    lastTime = max(lastTime,timeMarks[5]);
+    lastTime = max(lastTime, timeMarks[5]);
     float output = lastTime;
-    while(true){
-        output = output - (p6(output)-d)/v6(output);
-        if(fabs(p6(output)-d)<0.001){
+    while (true)
+    {
+        output = output - (p6(output) - d) / v6(output);
+        if (fabs(p6(output) - d) < 0.001)
+        {
             break;
         }
     }
@@ -135,11 +140,13 @@ float SCurveProfile::tp6(float d)
 }
 float SCurveProfile::tp7(float d)
 {
-    lastTime = max(lastTime,timeMarks[6]);
-   float output = lastTime;
-    while(true){
-        output = output - (p7(output)-d)/v7(output);
-        if(fabs(p7(output)-d)<0.001){
+    lastTime = max(lastTime, timeMarks[6]);
+    float output = lastTime;
+    while (true)
+    {
+        output = output - (p7(output) - d) / v7(output);
+        if (fabs(p7(output) - d) < 0.001)
+        {
             break;
         }
     }
@@ -168,16 +175,6 @@ SCurveProfile::SCurveProfile(float target, float a1, float a2, float j1, float j
     timeMarks[3] = timeMarks[2] + timeMarks[1];
     distStart = p3(timeMarks[3]);
     timeMarks[4] = timeMarks[3] + (target - distStart - distEnd) / vmax;
-
-    while(timeMarks[4]<timeMarks[3]){
-        //short dist I need to adjust vmax
-        vmax--;
-        timeMarks[2] = (vmax - v0) / a1;
-        timeMarks[3] = timeMarks[2] + timeMarks[1];
-        distStart = p3(timeMarks[3]);
-        timeMarks[4] = timeMarks[3] + (target - distStart - distEnd) / vmax;
-    }
-
     timeMarks[5] = timeMarks[4] + a2 / j2;
     timeMarks[6] = timeMarks[4] + (vmax - vf) / a2;
     timeMarks[7] = timeMarks[6] + a2 / j2;
@@ -193,7 +190,8 @@ SCurveProfile::SCurveProfile(float target, float a1, float a2, float j1, float j
     distMarks[7] = target;
 }
 
-float SCurveProfile::getOutputDist(float d){
+float SCurveProfile::getOutputDist(float d)
+{
     float output;
     if (d < distMarks[1])
     {
@@ -218,12 +216,12 @@ float SCurveProfile::getOutputDist(float d){
     else if (d < distMarks[6])
     {
         output = v6(tp6(d));
-        //output =0;
+        // output =0;
     }
     else if (d < distMarks[7])
     {
         output = v7(tp7(d));
-        //output =0;
+        // output =0;
     }
     else
     {
@@ -232,7 +230,8 @@ float SCurveProfile::getOutputDist(float d){
     return output;
 }
 
-float SCurveProfile::getOutput(float d){
+float SCurveProfile::getOutput(float d)
+{
     float output;
     if (d < distMarks[1])
     {
@@ -257,12 +256,12 @@ float SCurveProfile::getOutput(float d){
     else if (d < distMarks[6])
     {
         output = (tp6(d));
-        //output =0;
+        // output =0;
     }
     else if (d < distMarks[7])
     {
         output = (tp7(d));
-        //output =0;
+        // output =0;
     }
     else
     {
@@ -271,7 +270,8 @@ float SCurveProfile::getOutput(float d){
     return output;
 }
 
-float SCurveProfile::getOutputTime(float t){
+float SCurveProfile::getOutputTime(float t)
+{
     float output;
     if (t < timeMarks[1])
     {
@@ -296,12 +296,12 @@ float SCurveProfile::getOutputTime(float t){
     else if (t < timeMarks[6])
     {
         output = v6(t);
-        //output =0;
+        // output =0;
     }
     else if (t < timeMarks[7])
     {
         output = v7(t);
-        //output =0;
+        // output =0;
     }
     else
     {
@@ -309,4 +309,3 @@ float SCurveProfile::getOutputTime(float t){
     }
     return output;
 }
-
