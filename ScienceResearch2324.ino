@@ -10,10 +10,13 @@ const byte encoderLpinB = 18; // B pin -> the digital pin 18
 const float radius = 1.26;
 #include <AFMotor.h>
 
-// double Kp = 4, Ki = 50, Kd = 0;
-double Kp = 2, Ki = 40, Kd = 0.55;
+ //double Kp = 5, Ki = 50, Kd = 0;
+
+//good
+double Kp = 2, Ki = 40, Kd = 0.55; 
 double kf = 0;
-// double Kp = 2, Ki = 20, Kd = 0;
+
+
 class wheel
 {
 public:
@@ -147,12 +150,12 @@ public:
     return rotations * 2 * 3.141592 * radius;
   };
 };
-
+wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1, radius, true);
+wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4, radius);
 /*
 
   */
-wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1, radius, true);
-wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4, radius);
+
 
 double RPMtoIPS(double rpm)
 {
@@ -195,6 +198,9 @@ void setup()
    wheelR.setTargetSpeed(20);
    */
 }
+
+
+
 float target = 24;
 float a1 = 5;
 float a2 = 2.5;
@@ -209,8 +215,8 @@ SCurveProfile profile = SCurveProfile(target, a1, a2, j1, j2, v0, vf, vmax);
 void loop()
 {
 
-  float output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
-  // float output = profile.getOutputTime(millis()/1000.0);
+  //float output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
+ float output = profile.getOutputTime(millis()/1000.0);
   if (output != 0)
   {
     wheelL.runPID(IPStoRPM(output));
@@ -244,26 +250,6 @@ void loop()
     wheelR.run(0);
     delay(1000000000);
   }
-  /*
-  Serial.print("Left: ");
-  Serial.print(wheelR.speed);
-  Serial.print(" Right: ");
-  Serial.println(wheelR.speed);
-  */
-  /*
-wheelR.run(255);
-Serial.print(millis() / 1000.0);
-Serial.print(", ");
-Serial.print(wheelR.getSpeed());
-Serial.print(", ");
-Serial.print(wheelR.rotations);
-Serial.print(", ");
-Serial.println(wheelR.rpm);
-wheelL.updateRotations();
-wheelR.updateRotations();
-
-delay(100);
-*/
 }
 
 void EncoderInit()
