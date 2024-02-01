@@ -25,11 +25,11 @@
    "-IC:\\Users\\nikhi\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\standard",
    "-IC:\\Users\\nikhi\\Documents\\Arduino\\libraries\\PID",
    "-IC:\\Users\\nikhi\\Documents\\Arduino\\libraries\\Adafruit_Motor_Shield_library",
-   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp",
+   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp",
    "-o",
-   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp.o"
+   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp.o"
   ],
-  "file": "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp"
+  "file": "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp"
  },
  {
   "directory": "c:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324",
@@ -57,11 +57,11 @@
    "-IC:\\Users\\nikhi\\AppData\\Local\\Arduino15\\packages\\arduino\\hardware\\avr\\1.8.6\\variants\\standard",
    "-IC:\\Users\\nikhi\\Documents\\Arduino\\libraries\\PID",
    "-IC:\\Users\\nikhi\\Documents\\Arduino\\libraries\\Adafruit_Motor_Shield_library",
-   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp",
+   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp",
    "-o",
-   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp.o"
+   "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp.o"
   ],
-  "file": "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\ScienceResearch2324.ino.cpp"
+  "file": "C:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324\\build\\sketch\\motionProfile.cpp"
  },
  {
   "directory": "c:\\Users\\nikhi\\Documents\\Arduino\\ScienceResearch2324",

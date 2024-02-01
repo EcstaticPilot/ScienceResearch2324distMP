@@ -172,17 +172,18 @@ SCurveProfile::SCurveProfile(float target, float a1, float a2, float j1, float j
     timeMarks[1] = a1 / j1;
     timeMarks[2] = (vmax - v0) / a1;
     timeMarks[3] = timeMarks[2] + timeMarks[1];
-    distStart = p3(timeMarks[3]);
-    timeMarks[4] = timeMarks[3] + (target - distStart - distEnd) / vmax;
+        distMarks[1] = p1(timeMarks[1]);
+    distMarks[2] = p2(timeMarks[2]);
+    distMarks[3] = p3(timeMarks[3]);
+    distStart = distMarks[3];
+    timeMarks[4] = timeMarks[3] + (target - distMarks[3] - distEnd) / vmax;
     timeMarks[5] = timeMarks[4] + a2 / j2;
     timeMarks[6] = timeMarks[4] + (vmax - vf) / a2;
     timeMarks[7] = timeMarks[6] + a2 / j2;
     endTime = timeMarks[7];
 
     distMarks[0] = 0;
-    distMarks[1] = p1(timeMarks[1]);
-    distMarks[2] = p2(timeMarks[2]);
-    distMarks[3] = p3(timeMarks[3]);
+
     distMarks[4] = p4(timeMarks[4]);
     distMarks[5] = p5(timeMarks[5]);
     distMarks[6] = p6(timeMarks[6]);

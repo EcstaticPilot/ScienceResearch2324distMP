@@ -166,15 +166,27 @@ double IPStoRPM(double ips)
 {
   return ips * 60 / (2 * 3.141592 * radius);
 }
+
+float target = 24;
+float a1 = 5;
+float a2 = 2.5;
+float j1 = 50;
+float j2 = 10;
+float v0 = 1;
+float vf = 1;
+float vmax = 6;
+// SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
+SCurveProfile profile = SCurveProfile(target, a1, a2, j1, j2, v0, vf, vmax);
 void setup()
 {
   Serial.begin(115200); // Initialize the serial port
 
   EncoderInit(); // Initialize the module
-  float target = 4.3;
+
   // SCurveProfile profile = SCurveProfile(target, 1.0, 1.2, 3.42, 3.6, 0.2, 0.5, 1.17);
   wheelL.rotations = 0;
   wheelR.rotations = 0;
+  //Serial.println(profile.timeMarks[7]);
   delay(0); /*
    for (float i = 0; i <= profile.target + 0.01; i += 0.01)
    {
@@ -202,22 +214,13 @@ void setup()
 
 
 
-float target = 24;
-float a1 = 5;
-float a2 = 2.5;
-float j1 = 50;
-float j2 = 10;
-float v0 = 1;
-float vf = 1;
-float vmax = 6;
-// SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
-SCurveProfile profile = SCurveProfile(target, a1, a2, j1, j2, v0, vf, vmax);
+
 // SCurveProfile profile2(10, 50,15,500,100,2,4,7);
 void loop()
 {
 
-  //float output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
- float output = profile.getOutputTime(millis()/1000.0);
+  float output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
+ //float output = profile.getOutputTime(millis()/1000.0);
   if (output != 0)
   {
     wheelL.runPID(IPStoRPM(output));
@@ -229,8 +232,8 @@ void loop()
     Serial.print(millis() / 1000.0);
     Serial.print(", ");
     Serial.print(output);
-    Serial.print(", ");
-    Serial.print(profile.getOutputTime(millis() / 1000.0));
+    // Serial.print(", ");
+    // Serial.print(profile.getOutputTime(millis() / 1000.0));
     Serial.print(", ");
     Serial.println(RPMtoIPS((wheelL.rpm + wheelR.rpm) / 2.0));
 
