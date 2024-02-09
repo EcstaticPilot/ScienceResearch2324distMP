@@ -6,23 +6,23 @@ const byte encoderRpinA = 2;  // A pin -> the interrupt pin 0
 const byte encoderRpinB = 16; // B pin -> the digital pin 16
 const byte encoderLpinA = 3;  // A pin -> the interrupt pin 1
 const byte encoderLpinB = 18; // B pin -> the digital pin 18
-
+const byte switchPin = 19;
 const float radius = 1.26;
+bool MP = true;
 #include <AFMotor.h>
 
- //double Kp = 5, Ki = 50, Kd = 0;
+// double Kp = 5, Ki = 50, Kd = 0;
 
-//good
-double Kp = 2, Ki = 40, Kd = 0.55; 
+// good
+double Kp = 1.5, Ki = 40, Kd = 0.55;
 double kf = 0;
-
 
 class wheel
 {
 public:
   int count = 0;
   double rpm = 0;
-  uint64_t ticks = 0;
+  int64_t ticks = 0;
   float radius;
   double rotations = 0;
   double output;
@@ -46,10 +46,6 @@ public:
   {
     motor.setSpeed(abs(speed));
 
-    if (reverse)
-    {
-      speed = -1 * speed;
-    }
     if (speed > 0)
     {
       motor.run(FORWARD);
@@ -74,7 +70,7 @@ public:
     if (e)
     {
       float out = min((output + targetSpeed * kf), 255);
-      run((reverse ? -1 : 1) * (out));
+      run( (out));
       // Serial.print("output: ");
       // Serial.println(output + targetSpeed * kf);
     }
@@ -141,6 +137,7 @@ public:
   {
     getSpeed();
     rotations = (double)ticks / 1920.0;
+    //ticks = ticks % 1920;
     count = 0;
   };
 
@@ -149,13 +146,17 @@ public:
     rotations = (double)ticks / 1920.0;
     return rotations * 2 * 3.141592 * radius;
   };
+
+  void stop(){
+    run(0);
+    motor.run(BRAKE);
+  }
 };
 wheel wheelL = wheel(encoderLpinA, encoderLpinB, 1, radius, true);
 wheel wheelR = wheel(encoderRpinA, encoderRpinB, 4, radius);
 /*
 
   */
-
 
 double RPMtoIPS(double rpm)
 {
@@ -166,13 +167,13 @@ double IPStoRPM(double ips)
   return ips * 60 / (2 * 3.141592 * radius);
 }
 
-float target = 24;
+float target = 18;
 float a1 = 5;
-float a2 = 2.5;
+float a2 = 3.5;
 float j1 = 50;
 float j2 = 10;
 float v0 = 1;
-float vf = 1;
+float vf = 2;
 float vmax = 6;
 // SCurveProfile profile = SCurveProfile(target, 50, 22, 400, 100, 10, 5, 20);
 SCurveProfile profile = SCurveProfile(target, a1, a2, j1, j2, v0, vf, vmax);
@@ -181,11 +182,13 @@ void setup()
   Serial.begin(115200); // Initialize the serial port
 
   EncoderInit(); // Initialize the module
-  
+
   // SCurveProfile profile = SCurveProfile(target, 1.0, 1.2, 3.42, 3.6, 0.2, 0.5, 1.17);
   wheelL.rotations = 0;
   wheelR.rotations = 0;
-  //Serial.println(profile.timeMarks[7]);
+  wheelL.ticks = 0;
+  wheelR.ticks = 0;
+  // Serial.println(profile.timeMarks[7]);
   delay(0); /*
    for (float i = 0; i <= profile.target + 0.01; i += 0.01)
    {
@@ -209,22 +212,42 @@ void setup()
    wheelL.setTargetSpeed(20);
    wheelR.setTargetSpeed(20);
    */
+  pinMode(switchPin, INPUT);
+    MP = true;
+
+  Serial.println(MP);
 }
 
-
-
-
 // SCurveProfile profile2(10, 50,15,500,100,2,4,7);
+float output = 1;
 void loop()
 {
 
-  float output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
- //float output = profile.getOutputTime(millis()/1000.0);
+  if (MP)
+  {
+    output = profile.getOutputDist((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
+  }
+  else
+  {
+    output = 100;
+    if(((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0)>target){
+      output = 0;
+    }
+  }
+  
+  // float output = profile.getOutputTime(millis()/1000.0);
   if (output != 0)
   {
-    wheelL.runPID(IPStoRPM(output));
-    wheelR.runPID(IPStoRPM(output));
-    
+    if (MP)
+    {
+      wheelL.runPID(IPStoRPM(output));
+      wheelR.runPID(IPStoRPM(output));
+    }
+    else
+    {
+      wheelL.run(255);
+      wheelR.run(255);
+    }
     // Serial.print("dist:");
     Serial.print((wheelR.distTravelled() + wheelL.distTravelled()) / 2.0);
     Serial.print(", ");
@@ -235,7 +258,7 @@ void loop()
     // Serial.print(profile.getOutputTime(millis() / 1000.0));
     Serial.print(", ");
     Serial.println(RPMtoIPS((wheelL.rpm + wheelR.rpm) / 2.0));
-    
+
     // Serial.print(", ");
     // Serial.println(((wheelR.speed+wheelL.speed)/2) - IPStoRPM(output));
 
@@ -249,9 +272,12 @@ void loop()
     Serial.println("Done");
     Serial.print("rotations:");
     Serial.print((wheelR.rotations + wheelL.rotations) / 2.0);
+    wheelL.stop();
+    wheelR.stop();
+    delay(1000);
     wheelL.run(0);
     wheelR.run(0);
-    delay(1000000000);
+    delay(100000000);
   }
 }
 
