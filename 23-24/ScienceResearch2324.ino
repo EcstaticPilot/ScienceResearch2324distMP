@@ -1,3 +1,5 @@
+#include <AFMotor.h>
+
 #include <PID_v1.h>
 #include "MotionProfile.h"
 
