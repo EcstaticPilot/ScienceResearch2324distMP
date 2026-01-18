@@ -19,14 +19,14 @@ void drawRobot(SDL_Renderer *renderer, SDL_Texture *texture, int x, int y, int s
 void drawLine(SDL_Renderer *renderer, int x1, int y1, int x2, int y2)
 {
     //! HARD CODED BAD
-     int boxSize = static_cast<int>(140.75 * SCALE_FACTOR);
+    int boxSize = static_cast<int>(140.75 * SCALE_FACTOR);
     int x = (SCREEN_WIDTH - boxSize) / 2; // Center the box
     int y = (SCREEN_HEIGHT - boxSize) / 2;
-    x1 = x1*SCALE_FACTOR + (x + boxSize / 2);
-    y1 = y1*SCALE_FACTOR + (y + boxSize / 2);
-    x2 = x2*SCALE_FACTOR + (x + boxSize / 2);
-    y2 = y2*SCALE_FACTOR + (y + boxSize / 2);
-    SDL_RenderDrawLineF(renderer,x1,y1,x2,y2);
+    x1 = x1 * SCALE_FACTOR + (x + boxSize / 2);
+    y1 = y1 * SCALE_FACTOR + (y + boxSize / 2);
+    x2 = x2 * SCALE_FACTOR + (x + boxSize / 2);
+    y2 = y2 * SCALE_FACTOR + (y + boxSize / 2);
+    SDL_RenderDrawLineF(renderer, x1, y1, x2, y2);
 }
 void drawCircle(SDL_Renderer *renderer, int centreX, int centreY, float r)
 {
@@ -205,7 +205,7 @@ int main(int argc, char *argv[])
     const int FRAME_DELAY = 1000 / FRAME_RATE;
     std::cout << "Starting MCL" << std::endl;
     int J = 300;
-    MonteCarlo::init(pose(0, 0, 0), 300);
+    MonteCarlo::init(pose(0, 0, 0), 25);
     // SDL_Delay(500);
     MonteCarlo::renderParticles(renderer);
     std::cout << "MCL started" << std::endl;
@@ -258,27 +258,20 @@ int main(int argc, char *argv[])
                 case SDLK_d:
                     turnRight = false;
                     break;
-                case SDLK_t:
-                    MonteCarlo::setParticleCount(500);
-                    break;
-                case SDLK_g:
-                    MonteCarlo::setParticleCount(20);
-                    break;
+                }
+                if (event.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+
+                    // convert to inches
+                    x = (x - SCREEN_WIDTH / 2) / SCALE_FACTOR;
+                    y = -1 * (y - SCREEN_HEIGHT / 2) / SCALE_FACTOR;
+                    std::cout << "x: " << x << " y: " << y << std::endl;
+                    MonteCarlo::moveCenter({x, y});
                 }
             }
-            if (event.type == SDL_MOUSEBUTTONDOWN)
-            {
-                int x, y;
-                SDL_GetMouseState(&x, &y);
-
-                // convert to inches
-                x = (x - SCREEN_WIDTH / 2) / SCALE_FACTOR;
-                y = -1 * (y - SCREEN_HEIGHT / 2) / SCALE_FACTOR;
-                std::cout << "x: " << x << " y: " << y << std::endl;
-                MonteCarlo::moveCenter({x, y});
-            }
         }
-
         // Clear the screen with a white background
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
@@ -302,10 +295,10 @@ int main(int argc, char *argv[])
         }
 
         // Set the draw color to black
-        
 
         // Draw the hollow box
         SDL_Rect box = {x, y, boxSize, boxSize};
+        
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &box);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 25);
@@ -314,21 +307,22 @@ int main(int argc, char *argv[])
         SDL_RenderDrawLine(renderer, (6 * SCALE_FACTOR) + (x + boxSize / 2), (9 * SCALE_FACTOR) + (y + boxSize / 2), (-9 * SCALE_FACTOR) + (x + boxSize / 2), (-6 * SCALE_FACTOR) + (y + boxSize / 2));
         SDL_RenderDrawLine(renderer, (9 * SCALE_FACTOR) + (x + boxSize / 2), (6 * SCALE_FACTOR) + (y + boxSize / 2), (-6 * SCALE_FACTOR) + (x + boxSize / 2), (-9 * SCALE_FACTOR) + (y + boxSize / 2));
         drawCircle(renderer, -67 * SCALE_FACTOR + (x + boxSize / 2), (47 * SCALE_FACTOR) + (y + boxSize / 2), 2 * SCALE_FACTOR);
+        
         drawCircle(renderer, 67 * SCALE_FACTOR + (x + boxSize / 2), (47 * SCALE_FACTOR) + (y + boxSize / 2), 2 * SCALE_FACTOR);
         drawCircle(renderer, -67 * SCALE_FACTOR + (x + boxSize / 2), (-47 * SCALE_FACTOR) + (y + boxSize / 2), 2 * SCALE_FACTOR);
         drawCircle(renderer, 67 * SCALE_FACTOR + (x + boxSize / 2), (-47 * SCALE_FACTOR) + (y + boxSize / 2), 2 * SCALE_FACTOR);
 
-        drawLine(renderer,(-24+1.5),(-48-1.5),(-24+3), (-48));
-        drawLine(renderer,(-24+1.5),(-48+1.5),(-24+3), (-48));
+        drawLine(renderer, (-24 + 1.5), (-48 - 1.5), (-24 + 3), (-48));
+        drawLine(renderer, (-24 + 1.5), (-48 + 1.5), (-24 + 3), (-48));
 
-        drawLine(renderer,-(-24+1.5),(-48-1.5),-(-24+3), (-48));
-        drawLine(renderer,-(-24+1.5),(-48+1.5),-(-24+3), (-48));
+        drawLine(renderer, -(-24 + 1.5), (-48 - 1.5), -(-24 + 3), (-48));
+        drawLine(renderer, -(-24 + 1.5), (-48 + 1.5), -(-24 + 3), (-48));
 
-        drawLine(renderer,(-24+1.5),-(-48-1.5),(-24+3), -(-48));
-        drawLine(renderer,(-24+1.5),-(-48+1.5),(-24+3), -(-48));
+        drawLine(renderer, (-24 + 1.5), -(-48 - 1.5), (-24 + 3), -(-48));
+        drawLine(renderer, (-24 + 1.5), -(-48 + 1.5), (-24 + 3), -(-48));
 
-        drawLine(renderer,-(-24+1.5),-(-48-1.5),-(-24+3), -(-48));
-        drawLine(renderer,-(-24+1.5),-(-48+1.5),-(-24+3), -(-48));        
+        drawLine(renderer, -(-24 + 1.5), -(-48 - 1.5), -(-24 + 3), -(-48));
+        drawLine(renderer, -(-24 + 1.5), -(-48 + 1.5), -(-24 + 3), -(-48));
         // draw robot
         drawRobot(
             renderer,
@@ -341,31 +335,31 @@ int main(int argc, char *argv[])
         MonteCarlo::renderDistanceSensors(renderer);
         MonteCarlo::update();
 
-        if (MonteCarlo::meanWeight() * J < 1 * pow(10, -10) || fabs(MCLpose.x) > 70 || fabs(MCLpose.y) > 70)
-        {
-            std::cout << "kidnapped: " << MonteCarlo::meanWeight() << std::endl;
-            MonteCarlo::spread *= 2;
-        }
-        else
-        {
-            MonteCarlo::spread = 1;
-        }
+        // if (MonteCarlo::meanWeight() * J < 1 * pow(10, -10) || fabs(MCLpose.x) > 70 || fabs(MCLpose.y) > 70)
+        // {
+        //     std::cout << "kidnapped: " << MonteCarlo::meanWeight() << std::endl;
+        //     MonteCarlo::spread *= 2;
+        // }
+        // else
+        // {
+        //     MonteCarlo::spread = 1;
+        // }
 
-        MonteCarlo::normalizeSamples();
-        MonteCarlo::renderParticles(renderer);
+        // MonteCarlo::normalizeSamples();
+         MonteCarlo::renderParticles(renderer);
         MCLpose = MonteCarlo::getPose();
         // std::cout << MonteCarlo::getESS()/MonteCarlo::J << std::endl;
-        //MonteCarlo::resample();
-        double stddev = MonteCarlo::getStdDev();
-        if (MonteCarlo::getESS() < (MonteCarlo::J) / 1)
-        {
-            std::cout << "resampled11111111111" << std::endl;
-            MonteCarlo::resample();
-        }
-        else
-        {
-        std::cout << "skipped" << std::endl;
-        }
+        // MonteCarlo::resample();
+        // double stddev = MonteCarlo::getStdDev();
+        // if (MonteCarlo::getESS() < (MonteCarlo::J) / 1)
+        // {
+        //     std::cout << "resampled11111111111" << std::endl;
+        //     MonteCarlo::resample();
+        // }
+        // else
+        // {
+        // std::cout << "skipped" << std::endl;
+        // }
 
         drawRobot(
             renderer,
