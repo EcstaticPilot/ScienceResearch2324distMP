@@ -51,6 +51,7 @@ namespace MonteCarlo
     void init(pose start, int max_samples);
     float maxWeight();
     void resample();
+    void resample(int count);
     void update();
     
     void relocalize();

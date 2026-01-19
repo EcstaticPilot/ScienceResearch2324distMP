@@ -1,4 +1,6 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
 #include <iostream>
 #include "monteCarlo.h"
 // Constants for the screen size
@@ -108,6 +110,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+
     SDL_Window *window = SDL_CreateWindow("MCL sim",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
@@ -128,6 +131,25 @@ int main(int argc, char *argv[])
         return 1;
     }
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    if (TTF_Init() != 0) {
+        printf("SDL_ttf could not initialize! TTF_Error: %s\n", TTF_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+    
+    TTF_Font *font = TTF_OpenFont("fonts/arial.ttf", 24); // 24 is the point size
+    if (font == NULL) {
+        printf("TTF_OpenFont Error: %s\n", TTF_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        TTF_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
 
     // robot
     SDL_Texture *robotTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 24 * SCALE_FACTOR, 24 * SCALE_FACTOR);
@@ -201,7 +223,7 @@ int main(int argc, char *argv[])
     Robot = pose(0, 0, 0);
     bool moveForward = false, moveBackward = false, turnLeft = false, turnRight = false;
 
-    const int FRAME_RATE = 10;
+    const int FRAME_RATE = 30;
     const int FRAME_DELAY = 1000 / FRAME_RATE;
     std::cout << "Starting MCL" << std::endl;
     int J = 300;
@@ -214,6 +236,7 @@ int main(int argc, char *argv[])
     pose prevRobot;
     // SDL_Delay(5000);
     float a = 0;
+    int prevPC = 300;
     while (running)
     {
         Uint32 frameStart = SDL_GetTicks();
@@ -358,16 +381,23 @@ int main(int argc, char *argv[])
         //MonteCarlo::resample();
         double stddev = MonteCarlo::getStdDev();
          std::cout << MonteCarlo::getESS() <<", "<<stddev<< std::endl;
+
+        //pc/area = density
+        int pc = prevPC+0.5*(((stddev*stddev*40))- prevPC);
+        prevPC = pc;
+        std::cout << "pc: " <<fmax(fmin(pc,800),5)<< std::endl;
         if (MonteCarlo::getESS() < (MonteCarlo::J) / 2)
         {
            // std::cout << "resampled11111111111" << std::endl;
-            MonteCarlo::resample();
+            MonteCarlo::resample(fmax(fmin(pc,800),5));
         }
         else
         {
         //std::cout << "skipped" << std::endl;
         }
-        MonteCarlo::setParticleCount(MonteCarlo::getESS()*stddev);
+         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        drawCircle(renderer, MCLpose.x * SCALE_FACTOR + (x + boxSize / 2), -MCLpose.y * SCALE_FACTOR + (y + boxSize / 2), stddev*2 * SCALE_FACTOR);
+        //drawCircle(renderer, 0 * SCALE_FACTOR + (x + boxSize / 2), 0 * SCALE_FACTOR + (y + boxSize / 2), stddev*2 * SCALE_FACTOR);
         drawRobot(
             renderer,
             robotTexture2,
@@ -376,6 +406,20 @@ int main(int argc, char *argv[])
             16 * SCALE_FACTOR,
             MCLpose.theta);
         prevRobot = MCLpose;
+        char pcText[32];
+        snprintf(pcText, sizeof(pcText), "pc: %d", (int)pc);
+        SDL_Color textColor = {0, 0, 0, 255};
+        SDL_Surface *textSurface = TTF_RenderText_Solid(font, pcText, textColor);
+        if (textSurface) {
+            SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+            if (textTexture) {
+                SDL_Rect textRect = {SCREEN_WIDTH - textSurface->w - 10, 10, textSurface->w, textSurface->h};
+                SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
+                SDL_DestroyTexture(textTexture);
+            }
+            SDL_FreeSurface(textSurface);
+        }
+
         // MonteCarlo::getPose().print();
         //  Present the renderer
         SDL_RenderPresent(renderer);

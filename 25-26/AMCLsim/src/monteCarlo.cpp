@@ -473,8 +473,8 @@ namespace MonteCarlo
         for (int i = 0; i < J; i++)
         {
             sample j = samples[i];
-            sumx += fabs(Robot.x - j.x);
-            sumy += fabs(Robot.y - j.y);
+            sumx += fabs(MCLRobot.x - j.x);
+            sumy += fabs(MCLRobot.y - j.y);
         }
         float avgx = sumx / J;
         float avgy = sumy / J;
@@ -513,6 +513,48 @@ namespace MonteCarlo
     void resample()
     {
         // stochastic universal resampling
+        std::vector<sample> temp(J);
+
+        float start = (float)(((float)randgen() / (float)randgen.max()) / (float)J);
+
+        float sum = samples[0].w;
+        float j = start;
+
+        // k is pointer
+        float k = 0;
+
+        // std::cout<<"start "<<start<<std::endl;
+        //  repeat J times to fill entire space
+
+        for (int i = 0; i < J; i++)
+        {
+            j = start + (float)((float)(i) / J);
+
+            // while the weight we want is less than current sum, incremenet sum and counter
+            while (j > sum)
+            {
+                k++;
+                if (k > J - 1)
+                    break;
+                sum += samples[k].w;
+            }
+            // once we are less than sum, add to new sample
+            if (k > J - 1)
+            {
+                j = 0;
+                k = 0;
+            }
+
+            temp[i] = samples[k];
+            temp[i].w = 1.0f / J;
+        }
+        samples = temp;
+    }
+
+     void resample(int count)
+    {
+        // stochastic universal resampling
+        J=count;
         std::vector<sample> temp(J);
 
         float start = (float)(((float)randgen() / (float)randgen.max()) / (float)J);
@@ -606,7 +648,7 @@ namespace MonteCarlo
         }
         else
         {
-            pose start = Robot;
+            pose start = MCLRobot;
             auto rdn = std::normal_distribution<float>(0, 2);
             for (int i = J; i < count; i++)
             {
