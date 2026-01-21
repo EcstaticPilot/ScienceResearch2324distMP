@@ -363,7 +363,7 @@ int main(int argc, char *argv[])
 
         MonteCarlo::renderDistanceSensors(renderer);
         MonteCarlo::update();
-
+        float mean = MonteCarlo::meanWeight();
         if (MonteCarlo::meanWeight() * J < 1 * pow(10, -10) || fabs(MCLpose.x) > 70 || fabs(MCLpose.y) > 70)
         {
             std::cout << "kidnapped: " << MonteCarlo::meanWeight() << std::endl;
@@ -380,13 +380,15 @@ int main(int argc, char *argv[])
         
         //MonteCarlo::resample();
         double stddev = MonteCarlo::getStdDev();
-         std::cout << MonteCarlo::getESS() <<", "<<stddev<< std::endl;
+         std::cout << MonteCarlo::getESS() <<", "<<stddev<<", "<<MonteCarlo::getStdDevW()<<", "<<mean*prevPC<< std::endl;
 
         //pc/area = density
-        int pc = prevPC+0.5*(((stddev*stddev*40))- prevPC);
+        //int pc = prevPC ();
+        int pc = prevPC+0.5*(200-MonteCarlo::getESS());
+        //prevPC+0.5*(((stddev*stddev*40))- prevPC);
         prevPC = pc;
         std::cout << "pc: " <<fmax(fmin(pc,800),5)<< std::endl;
-        if (MonteCarlo::getESS() < (MonteCarlo::J) / 2)
+        if (true || MonteCarlo::getESS() < (MonteCarlo::J) / 2)
         {
            // std::cout << "resampled11111111111" << std::endl;
             MonteCarlo::resample(fmax(fmin(pc,800),5));

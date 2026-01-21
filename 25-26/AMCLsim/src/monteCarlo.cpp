@@ -468,19 +468,27 @@ namespace MonteCarlo
     float getStdDev()
     {
         normalizeSamples();
-        float sumx = 0;
-        float sumy = 0;
+        float sum = 0;
+        
         for (int i = 0; i < J; i++)
         {
             sample j = samples[i];
-            sumx += fabs(MCLRobot.x - j.x);
-            sumy += fabs(MCLRobot.y - j.y);
+            sum += pow(MCLRobot.x - j.x,2) + pow(MCLRobot.y - j.y,2);
         }
-        float avgx = sumx / J;
-        float avgy = sumy / J;
-        return sqrt(avgx * avgx + avgy * avgy);
-    }
 
+        return sqrt(sum/J);
+    }
+    float getStdDevW(){
+        normalizeSamples();
+        float mean = meanWeight();
+        float sum = 0;
+        for (int i = 0; i < J; i++)
+        {
+            sample j = samples[i];
+            sum += pow(mean - j.w,2);
+        }
+        return sqrt(sum/J);
+    }
     float meanWeight()
     {
         float sum = 0;

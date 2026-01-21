@@ -53,7 +53,7 @@ namespace MonteCarlo
     void resample();
     void resample(int count);
     void update();
-    
+    float getStdDevW();
     void relocalize();
     float distanceSensorWeight(sample particle, float d, pose offset);
     void normalizeSamples();
